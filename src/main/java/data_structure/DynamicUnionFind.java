@@ -1,23 +1,29 @@
 package data_structure;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Union Find(Disjoint Set Union)<br/>
- * https://github.com/NyaanNyaan/library/blob/master/data-structure/union-find.hpp を参考に作成
+ * 動的Union Find<br/>
+ * https://github.com/NyaanNyaan/library/blob/master/data-structure/dynamic-union-find.hpp を参考に作成
  */
-class UnionFind {
+class DynamicUnionFind {
 
-	final int[] data;
+	final Map<Integer, Integer> m = new HashMap<>();
 
 	/**
 	 * コンストラクター
-	 *
-	 * @param n
 	 */
-	UnionFind(int n) {
-		data = new int[n];
-		Arrays.fill(data, -1);
+	DynamicUnionFind() {}
+
+	/**
+	 * data[k]を取得する
+	 *
+	 * @param k
+	 * @return data[k]
+	 */
+	int data(int k) {
+		return m.getOrDefault(k, -1);
 	}
 
 	/**
@@ -27,7 +33,13 @@ class UnionFind {
 	 * @return kのリーダー
 	 */
 	int find(int k) {
-		return (data[k] < 0) ? k : (data[k] = find(data[k]));
+		int n = data(k);
+		if (n >= 0) {
+			int p = find(n);
+			m.put(k, p);
+			return p;
+		}
+		return k;
 	}
 
 	/**
@@ -53,13 +65,14 @@ class UnionFind {
 		if ((x = find(x)) == (y = find(y))) {
 			return false;
 		}
-		if (data[x] > data[y]) {
-			int t = x;
+		int nx = m.getOrDefault(x, -1), ny = m.getOrDefault(y, -1);
+		if (nx > ny) {
+			int tmp = x;
 			x = y;
-			y = t;
+			y = tmp;
 		}
-		data[x] += data[y];
-		data[y] = x;
+		m.put(x, m.getOrDefault(x, -1) + m.getOrDefault(y, -1));
+		m.put(y, x);
 		if (null != f) {
 			f.accept(x, y);
 		}
@@ -73,7 +86,7 @@ class UnionFind {
 	 * @return kが所属するグループの要素数
 	 */
 	int size(int k) {
-		return -data[find(k)];
+		return -data(find(k));
 	}
 
 	/**
@@ -85,6 +98,13 @@ class UnionFind {
 	 */
 	boolean same(int x, int y) {
 		return find(x) == find(y);
+	}
+
+	/**
+	 * すべてのグループをクリアする
+	 */
+	void clear() {
+		m.clear();
 	}
 
 	static interface IntBiConsumer {

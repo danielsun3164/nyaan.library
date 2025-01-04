@@ -11,16 +11,33 @@ class DynamicBinaryIndexedTree {
 	final int n;
 	Map<Integer, Long> data = new HashMap<>();
 
+	/**
+	 * コンストラクター
+	 *
+	 * @param n
+	 */
 	DynamicBinaryIndexedTree(int n) {
 		this.n = n + 1;
 	}
 
+	/**
+	 * kに値valueを加算する
+	 *
+	 * @param k
+	 * @param value
+	 */
 	void add(int k, long value) {
 		for (++k; k < n; k += k & -k) {
 			data.put(k, data.getOrDefault(k, 0L) + value);
 		}
 	}
 
+	/**
+	 * [0,k)の合計値を計算する
+	 *
+	 * @param k
+	 * @return [0,k)の合計値
+	 */
 	long sum(int k) {
 		if (k < 0) {
 			return 0L;
@@ -32,14 +49,33 @@ class DynamicBinaryIndexedTree {
 		return result;
 	}
 
+	/**
+	 * [l,r)の合計値を計算する
+	 *
+	 * @param l
+	 * @param r
+	 * @return [l,r)の合計値
+	 */
 	long sum(int l, int r) {
 		return sum(r) - sum(l);
 	}
 
+	/**
+	 * k番目の要素の値を取得する
+	 *
+	 * @param k
+	 * @return k番目の要素の値
+	 */
 	long get(int k) {
 		return data.getOrDefault(k + 1, 0L);
 	}
 
+	/**
+	 * data[i]>=valueとなる最小のiを取得する
+	 *
+	 * @param value
+	 * @return data[i]>=valueとなる最小のi
+	 */
 	int lowerBound(long value) {
 		if (value <= 0L) {
 			return 0;
